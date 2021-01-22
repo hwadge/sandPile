@@ -7,7 +7,7 @@ def InstantiateGrid(dim):
     return grid
 
 def SandDropper(x, y, grid):
-    grid[x][y] = grid[x][y] + 1
+    grid[x][y] += 1
 
 def iterate(grid, dim):
     avalanche = 0
@@ -30,7 +30,7 @@ def iterate(grid, dim):
     return grid
 
 def main():
-    N = 10000
+    N = 100000
     dim = (100,100)
     n = 0
 
