@@ -38,10 +38,10 @@ def main():
     
     while n < N:
         SandDropper(math.ceil(dim[0]/2), math.ceil(dim[0]/2), grid)
-        grid2 = iterate(grid, dim)
+        workingGrid = iterate(grid, dim)
         n += 1
         
-    plt.imshow(grid2)
+    plt.imshow(workingGrid)
     plt.show()
 
 
