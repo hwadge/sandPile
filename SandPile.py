@@ -2,8 +2,6 @@ import numpy
 import matplotlib.pyplot as plt
 import math
 
-avalancheList = []
-
 def InstantiateGrid(dim):
     grid = numpy.zeros((dim,dim))
     return grid
@@ -11,50 +9,38 @@ def InstantiateGrid(dim):
 def SandDropper(x, y, grid):
     grid[x][y] = grid[x][y] + 1
 
-def iterate(grid):
-    changed = False
+def iterate(grid, dim):
     avalanche = 0
-    global avalancheList
-    for ii, arr in enumerate(grid):
-        for jj, val in enumerate(arr):
-            if val > 3:
-                grid[ii, jj] -= 4
-                if ii > 0:
-                    grid[ii - 1, jj] += 1
-                    avalanche = avalanche + 1
-                if ii < len(grid)-1:
-                    grid[ii + 1, jj] += 1
-                    avalanche = avalanche + 1
-                if jj > 0:
-                    grid[ii, jj - 1] += 1
-                    avalanche = avalanche + 1
-                if jj < len(grid)-1:
-                    grid[ii, jj + 1] += 1
-                    avalanche = avalanche + 1
-                changed = True
-    avalancheList.append(avalanche)
-    return grid, changed
 
-def simulate(grid):
-    while True:
-        grid, changed = iterate(grid)
-        if not changed:
-            return grid
+    while numpy.max(grid) >= 4:
+
+        avalanche = grid >= 4
+        grid[avalanche] -= 4
+        
+        grid[1:,:][avalanche[:-1,:]] += 1
+        grid[:-1,:][avalanche[1:,:]] += 1
+        grid[:,1:][avalanche[:,:-1]] += 1
+        grid[:,:-1][avalanche[:,1:]] += 1
+
+        grid[0:1,:] = 0
+        grid[1+dim[0]:,:] = 0
+        grid[:,0:1] = 0
+        grid[:,1+dim[1]:] = 0
+	
+    return grid
 
 def main():
     N = 10000
-    dim = 50
-    global avalancheList
-    grid = InstantiateGrid(dim)
+    dim = (100,100)
+    n = 0
 
-    for j in range(N):
-        SandDropper(math.ceil(dim/2), math.ceil(dim/2), grid)
-        grid2 = simulate(grid)
+    grid = InstantiateGrid(dim[0])
     
-    plt.subplot(1, 2, 1)
-    plt.hist(avalancheList)
-
-    plt.subplot(1, 2, 2)
+    while n < N:
+        SandDropper(math.ceil(dim[0]/2), math.ceil(dim[0]/2), grid)
+        grid2 = iterate(grid, dim)
+        n += 1
+        
     plt.imshow(grid2)
     plt.show()
 
